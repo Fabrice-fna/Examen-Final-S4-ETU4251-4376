@@ -1,0 +1,102 @@
+========================================================
+ MOBILEMONEY - Simulation d'un opérateur mobile money
+ Guide d'installation et de démarrage (Windows)
+========================================================
+
+Ce projet contient déjà toutes ses dépendances (dossier vendor/,
+CodeIgniter 4 installé via Composer). Vous avez seulement besoin
+d'avoir PHP installé sur votre machine, PAS besoin d'internet.
+
+--------------------------------------------------------
+ETAPE 1 - Installer PHP sur Windows
+--------------------------------------------------------
+
+Option A (recommandée) : XAMPP
+1. Téléchargez et installez XAMPP (contient PHP + SQLite déjà activé) :
+   https://www.apachefriends.org/
+2. Ajoutez le dossier PHP au PATH Windows :
+   - Le dossier est en général : C:\xampp\php
+   - Panneau de configuration > Système > Paramètres système avancés
+     > Variables d'environnement > Path > Modifier > Nouveau
+     > collez : C:\xampp\php
+   - Redémarrez votre invite de commandes après ça.
+
+Option B : PHP seul
+1. Téléchargez PHP (version "Thread Safe") : https://windows.php.net/download/
+2. Décompressez-le, par exemple dans C:\php, ajoutez C:\php au PATH
+3. Copiez php.ini-development en php.ini et activez (enlevez le ";") :
+   extension=pdo_sqlite
+   extension=sqlite3
+
+Vérifiez avec :  php -v   (dans une invite de commandes cmd)
+
+--------------------------------------------------------
+ETAPE 2 - Lancer le projet
+--------------------------------------------------------
+
+Double-cliquez sur :
+
+   demarrer.bat
+
+Ce script va :
+ 1. Vérifier que PHP est installé
+ 2. Créer la base de données SQLite depuis base.sql (1er lancement)
+ 3. Démarrer le serveur sur http://127.0.0.1:8080
+
+Laissez la fenêtre ouverte. Pour arrêter : fermez la fenêtre.
+
+--------------------------------------------------------
+ETAPE 3 - Utiliser l'application
+--------------------------------------------------------
+
+  Espace CLIENT (connexion automatique par numéro de téléphone) :
+      http://127.0.0.1:8080/
+
+  Espace OPERATEUR (administration) :
+      http://127.0.0.1:8080/admin
+      Identifiant : admin
+      Mot de passe : admin123
+
+Numéros de test déjà en base (voir base.sql) :
+  - 0331234567 (solde de départ : 50 000 Ar)
+  - 0372345678 (solde de départ : 20 000 Ar)
+
+Seuls les préfixes 033 et 037 sont valables par défaut
+(modifiable dans l'espace opérateur > Préfixes).
+La création du compte client se fait automatiquement à la 1ère connexion.
+
+--------------------------------------------------------
+STRUCTURE DU PROJET (ajouts par rapport au squelette CodeIgniter)
+--------------------------------------------------------
+
+base.sql                  -> Script SQL unique (tables, vues, données)
+Taches.md                  -> Suivi des tâches par étudiant / livraison
+app/Controllers/Auth.php    -> Login client automatique par téléphone
+app/Controllers/Client.php   -> Solde, dépôt, retrait, transfert, historique
+app/Controllers/Admin.php     -> Préfixes, barèmes, gains, comptes clients
+app/Models/                    -> ClientModel, PrefixeModel, TypeOperationModel,
+                                    BaremeFraisModel, TransactionModel
+app/Views/auth, client, admin/  -> Pages HTML
+public/assets/css/style.css      -> CSS local (aucune dépendance internet)
+app/Config/Routes.php              -> Routes de l'application
+.env                                -> Configuré en SQLite (database.db)
+
+--------------------------------------------------------
+REINITIALISER LA BASE DE DONNEES
+--------------------------------------------------------
+
+Supprimez writable\database.db puis relancez demarrer.bat :
+il sera recréé automatiquement à partir de base.sql.
+
+--------------------------------------------------------
+EN CAS DE PROBLEME
+--------------------------------------------------------
+
+- "php n'est pas reconnu en tant que commande" : PHP n'est pas dans
+  votre PATH (voir étape 1).
+
+- Page blanche / erreur 500 : vérifiez que pdo_sqlite et sqlite3
+  sont actives dans votre php.ini.
+
+- Port 8080 déjà utilisé : modifiez demarrer.bat, remplacez
+  127.0.0.1:8080 par un autre port (ex: 127.0.0.1:8090).

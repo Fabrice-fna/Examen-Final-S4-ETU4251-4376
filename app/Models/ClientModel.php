@@ -33,4 +33,18 @@ class ClientModel extends Model
             [$montant, $clientId]
         );
     }
+    public function crediterEpargne(int $clientId, int $montant): void{
+        $this->db->query(
+            'UPDATE clients SET solde_epargne= solde_epargne + ? WHERE id = ?',
+            [$montant, $clientId]
+        );
+    }
+    public function debiter(int $clientId, int $montant): void
+    {
+        $this->db->query(
+            'UPDATE clients SET solde = solde - ? WHERE id = ?',
+            [$montant, $clientId]
+        );
+    }
 }
+

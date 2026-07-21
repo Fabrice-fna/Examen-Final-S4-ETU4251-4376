@@ -189,3 +189,6 @@ INSERT INTO parametres (cle, valeur, libelle) VALUES
 
 INSERT INTO parametres (cle, valeur, libelle) VALUES
 ('activer_promotion, '1', 'Activer promotion(1 = oui , 0 = non)'');
+
+ALTER TABLE clients ADD COLUMN taux_epargne INTEGER NOT NULL DEFAULT 5;
+ALTER TABLE clients ADD COLUMN solde_epargne INTEGER NOT NULL DEFAULT 0;

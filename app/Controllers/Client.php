@@ -200,13 +200,6 @@ class Client extends BaseController
             'operateur' => $frais - $fraisTelma,
             'telma'     => $fraisTelma,
         ];
-        $promoActive = $parametreModel ->get('activer_promotion_operateur_propre', '0') === '1';
-        if($promoActive){
-            $promoPropre = $parametreModel -> getInt('promotion_operateur_propre' /100);
-            $frais = (int) round($frais * (100-$promoPropre /100));
-            $fraisTelma = $frais
-        }
-
     }
 
     public function transfertValider()
@@ -317,8 +310,12 @@ class Client extends BaseController
 
         foreach ($destinataires as $i => $dest) {
             $montant = $montantParNum + ($i === 0 ? $reste : 0);
-            $this->clientModel->crediter($dest['id'], $montant);
-            $soldeDestinataire = $dest['solde'] + $montant;
+            $tauxEpargne = (int) ($dest['taux_epargne'] ?? 5);
+            $montantEpargne = (int) round($montant * $tauxEpargne/100);
+            $montantPrincipal = $montant - $montantEpargne;
+            $this->clientModel->crediterEpargne($dest['id'], $montantEpargne);
+        }
+            $soldeDestinataire = $dest['solde'] + $montantPrincipal;
 
             $this->transactionModel->insert([
                 'client_id'         => $dest['id'],
@@ -334,6 +331,7 @@ class Client extends BaseController
             $this->notificationModel->insert([
                 'client_id' => $dest['id'],
                 'message'   => 'Vous avez reçu ' . number_format($montant, 0, ',', ' ') . ' Ar de ' . $client['telephone'],
+                . ($montantEpargne > 0 ? '(dont ' . number_format($montantEpargne,0,',', ' ') . 'Ar mis en epargne)' : ''),
             ]);
         }
 
@@ -354,4 +352,4 @@ class Client extends BaseController
 
         return view('client/historique', ['client' => $client, 'historique' => $historique]);
     }
-}
+

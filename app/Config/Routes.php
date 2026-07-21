@@ -31,9 +31,11 @@ $routes->get('admin/baremes/supprimer/(:num)', 'Admin::baremeSupprimer/$1');
 
 $routes->get('admin/gains', 'Admin::gains');
 $routes->get('admin/frais', 'Admin::frais');
-$routes->get('admin/montants-operateurs', 'Admin::montantsParOperateur');
+$routes->get('admin/commissions', 'Admin::commissions');
 $routes->get('admin/commission-propre', 'Admin::commissionPropre');
 $routes->post('admin/commission-propre/enregistrer', 'Admin::commissionPropreEnregistrer');
 $routes->get('admin/commission', 'Admin::commission');
 $routes->post('admin/commission/enregistrer', 'Admin::commissionEnregistrer');
+$routes->get('admin/frais-retrait-propre', 'Admin::fraisRetraitPropre');
+$routes->post('admin/frais-retrait-propre/enregistrer', 'Admin::fraisRetraitPropreEnregistrer');
 $routes->get('admin/comptes', 'Admin::comptes');

@@ -18,7 +18,8 @@ ETU4251 :
 - Espace client : historique des opérations
 - Intégration graphique (CSS local, sans dépendance internet)
 
-## Livraison v2
+Livraison v2 (Version 2)
+
 
 ETU 4376 : Backend & Logique de Calcul
 -En charge de la configuration des règles métiers, des calculs de frais et des API. 
@@ -37,6 +38,6 @@ ETU 4251 : Frontend & Expérience Utilisateur (UI/UX)
 -Affichage du Récapitulatif (Avant validation)Concevoir un tableau ou un résumé clair pour le client :Montant total global.
 -Montant net par numéro (après division).Frais de retrait par numéro (si option cochée). Connexion aux APILier l'interface aux endpoints créés par ETU 4376 pour afficher les calculs en temps réel.
 
-## Livraison v3
+Livraison v3
 
-_(à compléter lors de la prochaine partie du sujet)_
+_

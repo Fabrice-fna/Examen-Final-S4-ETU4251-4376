@@ -152,12 +152,14 @@ class Client extends BaseController
             'client'                => $client,
             'commissionPropre'      => $parametreModel->getInt('commission_operateur_propre', 0),
             'commissionAutre'       => $parametreModel->getInt('commission_autres_operateurs', 0),
+            'fraisRetraitPropre'    => $parametreModel->getInt('frais_retrait_operateur_propre', 0),
+            'fraisTelmaAutre'       => $parametreModel->getInt('frais_telma_autres_operateurs', 50),
         ]);
     }
 
     /**
      * Calcule les frais d'un transfert.
-     * Pour notre operateur (Telma 034/038) : commission % + frais d'envoi (bareme)
+     * Pour notre operateur (Telma 034/038) : commission % + frais d'envoi (%)
      * Pour les autres operateurs : commission % uniquement (pas de frais d'envoi, pas de frais de retrait)
      * Retourne un tableau avec 'total', 'operateur' et 'telma'.
      */
@@ -165,30 +167,46 @@ class Client extends BaseController
     {
         $parametreModel = new ParametreModel();
         $frais          = 0;
+        $fraisTelma     = 0;
 
         if ($operateurPropre) {
             // Commission pour notre operateur (configurable en %)
             $commissionPropre = $parametreModel->getInt('commission_operateur_propre', 0);
             $frais += (int) round($montant * $commissionPropre / 100);
 
-            // Frais d'envoi selon le bareme (uniquement pour notre operateur)
-            $type  = $this->typeModel->findByCode('transfert');
-            $frais += $this->baremeModel->calculerFrais((int) $type['id'], $montant);
+            // Frais de retrait en pourcentage (configurable en admin, defaut 0%)
+            // Ne s'applique que si la case est cochee
+            $activerFraisRetrait = $parametreModel->get('activer_frais_retrait_operateur_propre', '0') === '1';
+            if ($activerFraisRetrait) {
+                $fraisRetraitPropre = $parametreModel->getInt('frais_retrait_operateur_propre', 0);
+                $frais += (int) round($montant * $fraisRetraitPropre / 100);
+            }
+
+            // Pour notre operateur : 100% des frais vont a Telma
+            $fraisTelma = $frais;
         } else {
             // Commission pour les autres operateurs (configurable en %)
             $commissionAutre = $parametreModel->getInt('commission_autres_operateurs', 0);
             $frais += (int) round($montant * $commissionAutre / 100);
-        }
 
-        // Repartition 50/50 entre operateur et Telma
-        $partOperateur = (int) round($frais / 2);
-        $partTelma     = $frais - $partOperateur;
+            // Telma recoit aussi un pourcentage (configurable en admin, defaut 50%)
+            $fraisTelmaAutre = $parametreModel->getInt('frais_telma_autres_operateurs', 50);
+            $fraisTelma = (int) round($montant * $fraisTelmaAutre / 100);
+            $frais += $fraisTelma;
+        }
 
         return [
             'total'     => $frais,
-            'operateur' => $partOperateur,
-            'telma'     => $partTelma,
+            'operateur' => $frais - $fraisTelma,
+            'telma'     => $fraisTelma,
         ];
+        $promoActive = $parametreModel ->get('activer_promotion_operateur_propre', '0') === '1';
+        if($promoActive){
+            $promoPropre = $parametreModel -> getInt('promotion_operateur_propre' /100);
+            $frais = (int) round($frais * (100-$promoPropre /100));
+            $fraisTelma = $frais
+        }
+
     }
 
     public function transfertValider()
@@ -201,6 +219,7 @@ class Client extends BaseController
         // Recuperation des numeros (envoi multiple possible, separes par , ; ou espace)
         $numerosBruts = trim((string) $this->request->getPost('telephone_destinataire'));
         $montantTotal = (int) $this->request->getPost('montant');
+        $appliquerFrais = $this->request->getPost('appliquer_frais') === '1';
 
         if ($montantTotal <= 0) {
             return redirect()->to('client/transfert')->with('erreur', 'Montant invalide.');
@@ -231,12 +250,18 @@ class Client extends BaseController
             }
         }
 
-        // Chargement des destinataires
+        // Chargement des destinataires (creation automatique si inexistant)
         $destinataires = [];
         foreach ($numeros as $num) {
             $dest = $this->clientModel->findByTelephone($num);
             if (! $dest) {
-                return redirect()->to('client/transfert')->with('erreur', 'Numéro de destinataire introuvable : ' . esc($num));
+                // Creer automatiquement le client destinataire
+                $this->clientModel->insert([
+                    'telephone'       => $num,
+                    'nom_utilisateur' => '',
+                    'solde'           => 0,
+                ]);
+                $dest = $this->clientModel->findByTelephone($num);
             }
             $destinataires[] = $dest;
         }
@@ -258,7 +283,7 @@ class Client extends BaseController
         foreach ($destinataires as $i => $dest) {
             $operateurPropre = $prefixeModel->estOperateurPropre($dest['telephone']);
             $montant = $montantParNum + ($i === 0 ? $reste : 0); // le reste va au premier
-            $frais   = $this->calculerFraisTransfert($montant, $operateurPropre);
+            $frais   = $appliquerFrais ? $this->calculerFraisTransfert($montant, $operateurPropre) : ['total' => 0, 'operateur' => 0, 'telma' => 0];
             $fraisParDest[$i] = $frais;
             $totalFrais      += $frais['total'];
             $totalFraisOp    += $frais['operateur'];

@@ -42,9 +42,9 @@ class Auth extends BaseController
 
         if (! $client) {
             $id     = $clientModel->insert([
-                'telephone'      => $telephone,
+                'telephone'       => $telephone,
                 'nom_utilisateur' => $nomUtilisateur,
-                'solde'          => 0,
+                'solde'           => 0,
             ], true);
             $client = $clientModel->find($id);
         } else {
@@ -56,8 +56,8 @@ class Auth extends BaseController
         }
 
         $this->session->set([
-            'client_id'           => $client['id'],
-            'client_telephone'    => $client['telephone'],
+            'client_id'              => $client['id'],
+            'client_telephone'       => $client['telephone'],
             'client_nom_utilisateur' => $client['nom_utilisateur'],
         ]);
 

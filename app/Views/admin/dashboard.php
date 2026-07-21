@@ -25,19 +25,16 @@
                 <a href="<?= base_url('admin/prefixes') ?>" class="action-btn"><span class="icon">Préfixes</span></a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="<?= base_url('admin/baremes') ?>" class="action-btn"><span class="icon">Barèmes de frais</span></a>
-            </div>
-            <div class="col-6 col-md-3">
                 <a href="<?= base_url('admin/gains') ?>" class="action-btn"><span class="icon">Situation des gains</span></a>
             </div>
             <div class="col-6 col-md-3">
                 <a href="<?= base_url('admin/frais') ?>" class="action-btn"><span class="icon">Détail des frais</span></a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="<?= base_url('admin/montants-operateurs') ?>" class="action-btn"><span class="icon">Montants par opérateur</span></a>
+                <a href="<?= base_url('admin/commissions') ?>" class="action-btn"><span class="icon">Commissions</span></a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="<?= base_url('admin/commission') ?>" class="action-btn"><span class="icon">Commission autres op.</span></a>
+                <a href="<?= base_url('admin/frais-retrait-propre') ?>" class="action-btn"><span class="icon">Frais d'envoi</span></a>
             </div>
             <div class="col-6 col-md-3">
                 <a href="<?= base_url('admin/comptes') ?>" class="action-btn"><span class="icon">Comptes clients</span></a>

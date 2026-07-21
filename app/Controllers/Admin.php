@@ -103,6 +103,23 @@ class Admin extends BaseController
     }
 
     /**
+     * Configuration des commissions (fusionnee).
+     */
+    public function commissions()
+    {
+        if (! $this->estConnecte()) {
+            return redirect()->to('admin');
+        }
+
+        $parametreModel = new ParametreModel();
+
+        return view('admin/commissions', [
+            'commissionPropre' => $parametreModel->getInt('commission_operateur_propre', 0),
+            'commissionAutre'  => $parametreModel->getInt('commission_autres_operateurs', 0),
+        ]);
+    }
+
+    /**
      * Configuration du pourcentage de commission pour les transferts
      * vers notre propre opérateur (Telma 034/038).
      */
@@ -174,6 +191,52 @@ class Admin extends BaseController
         );
 
         return redirect()->to('admin/commission')->with('succes', 'Commission configurée à ' . $pourcentage . ' %.');
+    }
+
+    /**
+     * Configuration du pourcentage de frais de retrait pour les transferts
+     * vers notre propre opérateur (Telma 034/038).
+     */
+    public function fraisRetraitPropre()
+    {
+        if (! $this->estConnecte()) {
+            return redirect()->to('admin');
+        }
+
+        $parametreModel = new ParametreModel();
+
+        return view('admin/frais_retrait_propre', [
+            'fraisRetrait' => $parametreModel->getInt('frais_retrait_operateur_propre', 0),
+            'activer'      => $parametreModel->get('activer_frais_retrait_operateur_propre', '0') === '1',
+        ]);
+    }
+
+    public function fraisRetraitPropreEnregistrer()
+    {
+        if (! $this->estConnecte()) {
+            return redirect()->to('admin');
+        }
+
+        $pourcentage = (int) $this->request->getPost('pourcentage');
+        if ($pourcentage < 0) {
+            $pourcentage = 0;
+        }
+
+        $activer = $this->request->getPost('activer') ? '1' : '0';
+
+        (new ParametreModel())->definir(
+            'frais_retrait_operateur_propre',
+            (string) $pourcentage,
+            'Pourcentage de frais de retrait pour les transferts vers notre propre opérateur (Telma 034/038) (%)'
+        );
+
+        (new ParametreModel())->definir(
+            'activer_frais_retrait_operateur_propre',
+            $activer,
+            'Activer les frais de retrait pour les transferts vers notre propre opérateur (1 = oui, 0 = non)'
+        );
+
+        return redirect()->to('admin/frais-retrait-propre')->with('succes', 'Frais de retrait configurés à ' . $pourcentage . ' % (activés: ' . ($activer === '1' ? 'oui' : 'non') . ').');
     }
 
     public function prefixeSupprimer($id)

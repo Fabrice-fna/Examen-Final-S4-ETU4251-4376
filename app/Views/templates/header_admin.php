@@ -27,11 +27,9 @@
     <div class="tabs nav nav-pills mb-4 flex-wrap">
         <a class="nav-link <?= (current_url() == base_url('admin/dashboard') || current_url() == base_url('admin')) ? 'active' : '' ?>" href="<?= base_url('admin/dashboard') ?>">Tableau de bord</a>
         <a class="nav-link <?= strpos(current_url(), 'prefixes') !== false ? 'active' : '' ?>" href="<?= base_url('admin/prefixes') ?>">Préfixes</a>
-        <a class="nav-link <?= strpos(current_url(), 'baremes') !== false ? 'active' : '' ?>" href="<?= base_url('admin/baremes') ?>">Barèmes de frais</a>
         <a class="nav-link <?= strpos(current_url(), 'gains') !== false ? 'active' : '' ?>" href="<?= base_url('admin/gains') ?>">Situation des gains</a>
-        <a class="nav-link <?= strpos(current_url(), 'frais') !== false ? 'active' : '' ?>" href="<?= base_url('admin/frais') ?>">Détail des frais</a>
-        <a class="nav-link <?= strpos(current_url(), 'montants') !== false ? 'active' : '' ?>" href="<?= base_url('admin/montants-operateurs') ?>">Montants par opérateur</a>
-        <a class="nav-link <?= strpos(current_url(), 'commission-propre') !== false ? 'active' : '' ?>" href="<?= base_url('admin/commission-propre') ?>">Commission Telma</a>
-        <a class="nav-link <?= strpos(current_url(), 'commission') !== false && strpos(current_url(), 'commission-propre') === false ? 'active' : '' ?>" href="<?= base_url('admin/commission') ?>">Commission autres op.</a>
+        <a class="nav-link <?= strpos(current_url(), 'frais') !== false && strpos(current_url(), 'frais-retrait') === false ? 'active' : '' ?>" href="<?= base_url('admin/frais') ?>">Détail des frais</a>
+        <a class="nav-link <?= strpos(current_url(), 'commissions') !== false ? 'active' : '' ?>" href="<?= base_url('admin/commissions') ?>">Commissions</a>
+        <a class="nav-link <?= strpos(current_url(), 'frais-retrait') !== false ? 'active' : '' ?>" href="<?= base_url('admin/frais-retrait-propre') ?>">Frais d'envoi</a>
         <a class="nav-link <?= strpos(current_url(), 'comptes') !== false ? 'active' : '' ?>" href="<?= base_url('admin/comptes') ?>">Comptes clients</a>
     </div>

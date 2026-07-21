@@ -37,18 +37,11 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS parametres (
     libelle   TEXT NOT NULL
 )");
 
-// 4. Seed / mise a jour des parametres
-$pdo->exec("INSERT OR IGNORE INTO parametres (cle, valeur, libelle) VALUES ('commission_operateur_propre', '50', 'Pourcentage de commission pour les transferts vers notre propre opérateur (Telma 034/038) (%)')");
-$pdo->exec("INSERT OR IGNORE INTO parametres (cle, valeur, libelle) VALUES ('commission_autres_operateurs', '10', 'Pourcentage de commission pour les transferts vers les autres opérateurs (%)')");
+// 4. Les parametres (pourcentages de commission) et les prefixes ne sont
+// plus inseres directement en SQL ici : ils doivent etre ajoutes depuis
+// l'application (admin/commission-propre, admin/commission, admin/prefixes).
 
-// 5. Mise a jour des prefixes : 034 et 038 = Telma (notre operateur)
-$pdo->exec("UPDATE prefixes SET operateur = 'Telma', est_operateur_propre = 1 WHERE prefixe IN ('034','038')");
-$pdo->exec("UPDATE prefixes SET operateur = 'Orange', est_operateur_propre = 0 WHERE prefixe = '031'");
-$pdo->exec("UPDATE prefixes SET operateur = 'Telma', est_operateur_propre = 0 WHERE prefixe = '032'");
-$pdo->exec("UPDATE prefixes SET operateur = 'Airtel', est_operateur_propre = 0 WHERE prefixe = '033'");
-$pdo->exec("UPDATE prefixes SET operateur = 'Blueline', est_operateur_propre = 0 WHERE prefixe = '037'");
-
-// 6. Recreation des vues (DROP IF EXISTS puis CREATE)
+// 5. Recreation des vues (DROP IF EXISTS puis CREATE)
 $sql = file_get_contents('base.sql');
 // Extraire uniquement les definitions de vues
 preg_match_all('/DROP VIEW IF EXISTS (\w+);\s*CREATE VIEW \1 AS\s*SELECT.*?;/is', $sql, $matches, PREG_SET_ORDER);

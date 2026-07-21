@@ -2,7 +2,7 @@
 -- base.sql
 -- Système de simulation d'un opérateur de Mobile Money
 -- Base de données : SQLite
--- Contient : création des tables, des vues, et des données de base
+-- Contient : création des tables, des vues
 -- =====================================================================
 
 -- On desactive temporairement les cles etrangeres pour pouvoir
@@ -16,7 +16,7 @@ CREATE TABLE prefixes (
     id                    INTEGER PRIMARY KEY AUTOINCREMENT,
     prefixe               TEXT NOT NULL UNIQUE,
     actif                 INTEGER NOT NULL DEFAULT 1,
-    operateur             TEXT NOT NULL DEFAULT 'Telma',
+    operateur             TEXT NOT NULL DEFAULT 'Notre opérateur',
     est_operateur_propre  INTEGER NOT NULL DEFAULT 1
 );
 
@@ -52,6 +52,7 @@ DROP TABLE IF EXISTS clients;
 CREATE TABLE clients (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     telephone      TEXT NOT NULL UNIQUE,
+    nom            TEXT NOT NULL DEFAULT '',
     nom_utilisateur TEXT NOT NULL DEFAULT '',
     solde          INTEGER NOT NULL DEFAULT 0,
     date_creation  TEXT NOT NULL DEFAULT (datetime('now'))
@@ -140,15 +141,14 @@ GROUP BY operateur, est_operateur_propre;
 PRAGMA foreign_keys = ON;
 
 
+INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('033', 1, 'Airtel', 0);
+INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('032', 1, 'Orange', 0);
 INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('034', 1, 'Telma', 1);
 INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('038', 1, 'Telma', 1);
-INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('032', 1, 'Orange', 0);
-INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('033', 1, 'Airtel', 0);
-INSERT INTO prefixes (prefixe, actif, operateur, est_operateur_propre) VALUES ('037', 1, 'Blueline', 0);
 
 
-INSERT INTO parametres (cle, valeur, libelle) VALUES ('commission_operateur_propre', '50', 'Pourcentage de commission pour les transferts vers notre propre opérateur (Telma 034/038) (%)');
-INSERT INTO parametres (cle, valeur, libelle) VALUES ('commission_autres_operateurs', '10', 'Pourcentage de commission pour les transferts vers les autres opérateurs (%)');
+INSERT INTO parametres (cle, valeur, libelle) VALUES ('commission_meme_operateur', '50', 'Pourcentage de commission pour les transferts vers le même opérateur (%)');
+INSERT INTO parametres (cle, valeur, libelle) VALUES ('commission_autre_operateur', '10', 'Pourcentage de commission pour les transferts vers un autre opérateur (%)');
 
 
 INSERT INTO types_operations (code, libelle) VALUES ('depot', 'Dépôt');
@@ -180,5 +180,12 @@ INSERT INTO baremes_frais (type_operation_id, montant_min, montant_max, frais) V
 INSERT INTO baremes_frais (type_operation_id, montant_min, montant_max, frais) VALUES (3, 1000001, 2000000, 3000);
 
 
-INSERT INTO clients (telephone, nom_utilisateur, solde) VALUES ('0341234567', 'Jean', 50000);
-INSERT INTO clients (telephone, nom_utilisateur, solde) VALUES ('0382345678', 'Marie', 20000);
+INSERT INTO clients (telephone, nom, solde) VALUES ('0341234567', 'Client A', 50000);
+INSERT INTO clients (telephone, nom, solde) VALUES ('0382345678', 'Client B', 20000);
+
+
+INSERT INTO parametres (cle, valeur, libelle) VALUES
+('commission_operateur_propre, '20', 'Promotion sur les frais vers le meme operateur(%)'');
+
+INSERT INTO parametres (cle, valeur, libelle) VALUES
+('activer_promotion, '1', 'Activer promotion(1 = oui , 0 = non)'');

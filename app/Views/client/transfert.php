@@ -18,10 +18,14 @@
                         <input type="number" class="form-control" id="montant" name="montant" min="1" step="1" required>
                         <div class="form-text">Ce montant sera réparti entre les destinataires (ex: 3000 Ar pour 3 numéros = 1000 Ar chacun).</div>
                     </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="appliquer_frais" name="appliquer_frais" value="1" checked>
+                        <label class="form-check-label" for="appliquer_frais">Appliquer les frais de transfert</label>
+                    </div>
                     <p class="text-muted">
                         <strong>Frais applicables :</strong><br>
-                        - Vers Telma (034/038) : <?= (int) $commissionPropre ?>% de commission + frais d'envoi selon le barème<br>
-                        - Vers autres opérateurs : <?= (int) $commissionAutre ?>% de commission uniquement (pas de frais d'envoi, pas de frais de retrait)
+                        - Vers Telma (034/038) : <?= (int) $commissionPropre ?>% de commission + <?= (int) $fraisRetraitPropre ?>% de frais de retrait<br>
+                        - Vers autres opérateurs : <?= (int) $commissionAutre ?>% de commission + Telma reçoit <?= (int) $fraisTelmaAutre ?>% (pas de frais de retrait)
                     </p>
                     <button type="submit" class="btn btn-primary w-100">Valider le transfert</button>
                     <a href="<?= base_url('client') ?>" class="btn btn-secondary w-100 mt-2">Annuler</a>
